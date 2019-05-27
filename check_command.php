@@ -5,16 +5,16 @@ header('Content-Type: application/json');
 //ce fichier permet d'afficher le retour du traitement USSD de retrait
 require_once dirname(__FILE__) .'/common.php';
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {//appel en POST
-  return json_encode([
-                "type" => "error",
-                "errortype" => "Requette incorrecte"
-            ]);
+  exit( json_encode([
+                "ErrorMessage" => "Requette incorrecte",
+                "SuccessMessage" => "false"
+            ]));
 }
 
 extract($_POST,EXTR_OVERWRITE);
 $service_token = "";
-//Votre service token Mobitransfert vous l'obtenez en vous inscrivant ici https://mobitransfert.com/api/register , il n'est pas public et est obligatoire
-//Votre requêtte doit contenir le champs commandID
+//Votre service token Mobitransfert vous l'obtenez en vous inscrivant ici https://mobitransfert.com/register , il n'est pas public et est obligatoire
+//Votre requêtte doit contenir les champs prix,qte et phone
 $command_checker = new MobitransfertCommons($service_token);
-$json = $command_checker->check_command($commandID); 
+$json = json_encode($command_checker->check_command($commandID));//use $_POST['commandID']
 exit($json);

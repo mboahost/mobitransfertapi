@@ -68,7 +68,7 @@ class MobitransfertCommons
 	 $response = $this->send_request($datas);
 	 $await = 0;
 	  while($response->type!="error"&&($response->datas->executedAt=="null"||empty($response->datas->executedAt))){
-		sleep(3);
+		sleep(1);
 		$response = json_decode($this->send_request($datas));
         $await++;		
 	 }
@@ -97,7 +97,7 @@ class MobitransfertCommons
 	 $response = json_decode($this->send_request($datas));
 	 $await = 0;
 	 while($response->type!="error"&&($response->datas->paid=="null"||empty($response->datas->paid)||$response->datas->paid=="no")&&$await<100){//on attends jusqu'à 5 minutes ie 3 x 100 secondes
-		sleep(3);
+		sleep(1);
 		$response = json_decode($this->send_request($datas));
         $await++;		
 	 }

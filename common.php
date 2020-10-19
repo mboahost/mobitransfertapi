@@ -51,11 +51,9 @@ class MobitransfertCommons
   Exemple il dira si l'utilisateur peux composer le #150# ou si son crédit est insuffisant ou s'il ya eu une érreur au niveau du système
   elle peut être appellée à tout moment;
   datas returned 
-  {
-   type:"error ou success",
-   errortype:"message on error",
-   datas : {executedAt:"can be null if(not yet executed) or timestamp",message:"message from USSD server",errorCode :"Error code from USSD server can be 100(operator error) or 400(other errors) or 200(if success)" }   
-  }
+  for error => {error:{code:errorCode,message:ErrorMessage}}
+  for success =>  {executedAt:"can be null if(not yet executed) or timestamp",message:"message from USSD server",errorCode :"Error code from USSD server can be 100(operator error) or 400(other errors) or 200(if success)" }   
+  
   paramètres attendus:
   - Id de la transaction obtenue dans la réponse send_command
   $nouvelle_comm = new MobitransfertAPI($service_token,$prix,$qte,$phone);
@@ -79,11 +77,9 @@ class MobitransfertCommons
   cette fonction permet de checker si un paiement a été éxécutée et attends le message pour l'afficher au client
   Exemple il dira si l'utilisateur a payé ou a annulé. 
   datas returned 
-  {
-   type:"error ou success",
-   errortype:"message on error",
-   datas : {paid:"cancelled or paid"}   
-  }
+ for error => {error:{code:errorCode,message:ErrorMessage}}
+ for success =>  {paid:"yes or no or null" }   
+ 
   paramètres attendus:
   - Id de la transaction obtenue dans la réponse send_command
   $nouvelle_comm = new MobitransfertAPI($service_token,$prix,$qte,$phone);

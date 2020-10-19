@@ -12,7 +12,7 @@ class MobitransfertCommons
 	
  private function send_request($Datas_) {
       $datas = (object) $Datas_;      
-      $dest =  "https://api.mobitransfert.com:2020/users/$datas->action?";
+      $dest =  "https://api.mobitransfert.com/users/$datas->action?";
       $query = "";
       if(count($Datas_)){
             foreach ($Datas_ as $key => $val){  

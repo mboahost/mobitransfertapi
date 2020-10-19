@@ -16,7 +16,7 @@ class MobitransfertCommons
       $query = "";
       if(count($Datas_)){
             foreach ($Datas_ as $key => $val){  
-                $dest.=empty($query)?"?$key=$val":"&$key=$val";  
+                $dest.=empty($query)?"$key=$val":"&$key=$val";  
             }         
       }  
     $ch = curl_init();

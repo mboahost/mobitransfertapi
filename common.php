@@ -12,17 +12,16 @@ class MobitransfertCommons
 	
  private function send_request($Datas_) {
       $datas = (object) $Datas_;      
-      $dest =  "https://api.mobitransfert.com/?action=$datas->action";
-      
+      $dest =  "https://api.mobitransfert.com/users/$datas->action?";
+      $query = "";
       if(count($Datas_)){
-            foreach ($Datas_ as $key => $val){ 
-				if($key=="action") continue; 
-                $dest.="&$key=$val";  
+            foreach ($Datas_ as $key => $val){  
+                $dest.=empty($query)?"?$key=$val":"&$key=$val";  
             }         
       }  
     $ch = curl_init();
     $options = array(  
-        CURLOPT_URL => $dest,
+        CURLOPT_URL => $dest.$query,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
@@ -40,7 +39,7 @@ class MobitransfertCommons
 
     if ($httpCode != 200) {
         curl_close($ch);
-        return json_encode(["type" => "error", "errortype" => "Code $httpCode description " . curl_error($ch)]);
+        return json_encode(["message" =>curl_error($ch),"code"=>$httpCode]);
     } else { 
         curl_close($ch);	
         return $response;
@@ -64,10 +63,10 @@ class MobitransfertCommons
  */
  
   public function check_command($trID){
-	 $datas = ["commandID"=>$trID,"action"=>"checkCommand","ServiceToken"=>$this->ServiceToken];
+	 $datas = ["commandID"=>$trID,"action"=>"checkCommand","ServiceToken"=>$this->ServiceToken,"appID"=>$this->appID];
 	 $response = $this->send_request($datas);
 	 $await = 0;
-	  while($response->type!="error"&&($response->datas->executedAt=="null"||empty($response->datas->executedAt))){
+	  while(!$response->error && ($response->executedAt=="null"||empty($response->executedAt))){
 		sleep(1);
 		$response = json_decode($this->send_request($datas));
         $await++;		
@@ -93,10 +92,10 @@ class MobitransfertCommons
  */
 
   public function check_payment($trID){
-	 $datas = ["commandID"=>$trID,"action"=>"checkPayment","ServiceToken"=>$this->ServiceToken];
+	 $datas = ["commandID"=>$trID,"action"=>"checkPayment","ServiceToken"=>$this->ServiceToken,"appID"=>$this->appID];
 	 $response = json_decode($this->send_request($datas));
 	 $await = 0;
-	 while($response->type!="error"&&($response->datas->paid=="null"||empty($response->datas->paid)||$response->datas->paid=="no")&&$await<100){//on attends jusqu'à 5 minutes ie 3 x 100 secondes
+	 while(!$response->error&&($response->paid=="null"||empty($response->paid)||$response->paid=="no")&&$await<100){//on attends jusqu'à 5 minutes ie 3 x 100 secondes
 		sleep(1);
 		$response = json_decode($this->send_request($datas));
         $await++;		

@@ -100,7 +100,7 @@ class MobitransfertAPI
                 "ErrorMessage" => $error,
                 "SuccessMessage" => "false"
             ));
-        $url    = 'https://api.mobitransfert.com:2020/users/sendPayment';
+        $url    = 'https://api.mobitransfert.com/users/sendPayment';
         $fields = array(
             'ServiceToken' => urlencode($this->_vendeur),
             'appID' => urlencode($this->_appID),

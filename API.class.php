@@ -3,6 +3,7 @@ class MobitransfertAPI
 {
     public $_vendeur;//Votre service token Mobitransfert vous l'obtenez en vous inscrivant ici https://mobitransfert.com/register
     public $_prix;//prix du produit
+    public $_appID;//appID for mobiles apps
     public $_qte;//Quantité achetée
     public $_codeMobilePaye;//Numéro mobile du client
     public $bad_vendeurMessage = "Numéro de token invalide";
@@ -11,12 +12,13 @@ class MobitransfertAPI
     public $bad_numeroMessage = "Numéro de téléphone incorrect";
     public $bad_codeMobilePayeMessage = "Le code Mobile Paye ne doit pas contenir de virgule";
     
-    public function __construct($_vendeur, $_prix, $_qte, $_codeMobilePaye)
+    public function __construct($_vendeur, $_prix, $_qte, $_codeMobilePaye,$_appID)
     {
         $this->_vendeur        = $_vendeur;
         $this->_qte            = $_qte;
         $this->_prix           = $_prix;
         $this->_codeMobilePaye = $_codeMobilePaye;
+	$this->_appID = $_appID;
     }
     
     public function is_Good_prix()
@@ -57,17 +59,20 @@ class MobitransfertAPI
     public function is_aCamerPhone($number)
     {
         $splited = str_split($number);
-        if (count($splited) !== 9 || $splited[0] === "2" || $splited[0] !== "6") {
+        if (count($splited) !== 9 ||($splited[0] !== "6" && $splited[0] !== "2")) {
             return false;
         }
         switch (true) {
             case ($splited[1] == "7" || $splited[1] == "8" || ($splited[1] == "5" && intval($splited[2], 10) < 5)):
                 $retval = "mtn";
                 break;
-            case $splited[1] === "6":
+            case $splited[1] === "6" :
                 $retval = "nexttel";
                 break;
-            case ($splited[1] == "9" || ($splited[1] == "5" && intval($splited[2], 10) >=5)):
+                case ($splited[0] === "6" && $splited[1] === "0") || $splited[0] === "2":
+                $retval = "camtel";
+                break;
+		case ($splited[1] == "9" || ($splited[1] == "5" && intval($splited[2], 10) >=5)):
                 $retval = "orange";
                 break;
         }
@@ -95,9 +100,10 @@ class MobitransfertAPI
                 "ErrorMessage" => $error,
                 "SuccessMessage" => "false"
             ));
-        $url    = 'https://api.mobitransfert.com/?action=makepayment';
+        $url    = 'https://api.mobitransfert.com/users/sendPayment';
         $fields = array(
             'ServiceToken' => urlencode($this->_vendeur),
+            'appID' => urlencode($this->_appID),
             'number' => $this->_codeMobilePaye,
             'network' => $this->is_Good_PhoneNumber(),
             'amount' => $this->_prix * $this->_qte
